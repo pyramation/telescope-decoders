@@ -3,7 +3,11 @@ import telescope from '@osmonauts/telescope';
 import { sync as rimraf } from 'rimraf';
 import { AMINO_MAP } from './aminos';
 
-const protoDirs = [join(__dirname, '/../proto')];
+const protoDirs = [
+  join(__dirname, '/../cosmos-sdk/proto'),
+  join(__dirname, '/../wasmd/proto'),
+  join(__dirname, '/../proto')
+];
 const outPath = join(__dirname, '../src/codegen');
 rimraf(outPath);
 
@@ -17,21 +21,50 @@ telescope({
         'cosmos/staking/v1beta1/tx.amino.ts'
       ]
     },
+    interfaces: {
+      enabled: true,
+      useUnionTypes: false
+    },
     prototypes: {
-      includePackageVar: false,
+      enabled: true,
+      parser: {
+        keepCase: false
+      },
+      excluded: {
+        packages: ['cosmos.autocli.v1']
+      },
+      addAminoTypeToObjects: true,
+      addTypeUrlToObjects: true,
       typingsFormat: {
         useDeepPartial: false,
         useExact: false,
         timestamp: 'timestamp',
         duration: 'duration'
       },
+
       methods: {
+        encode: true,
+        decode: true,
+        fromJSON: true,
         toJSON: true,
-        fromJSON: true
-      }
+        fromPartial: true,
+        toSDK: true,
+        fromSDK: true,
+        //
+        toAmino: true,
+        fromAmino: true,
+        fromProto: true,
+        toProto: true
+      },
+      includePackageVar: false,
+      fieldDefaultIsOptional: false,
+      useOptionalNullable: true,
+      allowUndefinedTypes: false
     },
+
     aminoEncoding: {
       enabled: true,
+      useRecursiveV2encoding: true,
       exceptions: AMINO_MAP
     },
     lcdClients: {
